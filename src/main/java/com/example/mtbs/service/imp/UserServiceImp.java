@@ -1,12 +1,9 @@
 package com.example.mtbs.service.imp;
 
 import com.example.mtbs.dto.UserRegistrationDTO;
-import com.example.mtbs.entity.User;
-import com.example.mtbs.entity.Theater_Owner;
 import com.example.mtbs.entity.UserDetail;
-import com.example.mtbs.enums.Role;
-import com.example.mtbs.execption.handler.UserAlreadyExistsException;
-import com.example.mtbs.execption.handler.UserNotInsertedException;
+import com.example.mtbs.exception.UserAlreadyExistsException;
+import com.example.mtbs.exception.UserNotInsertedException;
 import com.example.mtbs.repository.UserRepository;
 import com.example.mtbs.service.UserService;
 import com.example.mtbs.mapper.UserRegistrationMapper;

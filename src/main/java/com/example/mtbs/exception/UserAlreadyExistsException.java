@@ -1,4 +1,4 @@
-package com.example.mtbs.execption.handler;
+package com.example.mtbs.exception;
 
 public class UserAlreadyExistsException extends RuntimeException {
 
