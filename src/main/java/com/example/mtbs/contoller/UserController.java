@@ -1,4 +1,4 @@
-package com.example.mtbs.controller;
+package com.example.mtbs.contoller;
 
 import com.example.mtbs.dto.UserRegistrationDTO;
 import com.example.mtbs.entity.UserDetail;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/")
 @AllArgsConstructor
 public class UserController {
 
