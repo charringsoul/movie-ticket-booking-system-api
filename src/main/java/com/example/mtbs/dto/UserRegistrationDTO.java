@@ -31,4 +31,6 @@ public record UserRegistrationDTO(
         @NotNull(message = "User role is required")
         Role userRole
 
-) {}
+) {
+
+}
