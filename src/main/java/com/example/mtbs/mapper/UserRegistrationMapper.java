@@ -10,26 +10,25 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserRegistrationMapper {
 
-    // Public method to map DTO to Entity
     public UserDetail mapToEntity(UserRegistrationDTO dto) {
-        return switch (dto.userRole()) {
-            case USER -> User.builder()
+        if (dto.userRole() == Role.THEATER_OWNER) {
+            return Theater_Owner.builder()
                     .username(dto.username())
                     .email(dto.email())
                     .password(dto.password())
                     .phoneNumber(dto.phoneNumber())
+                    .userRole(dto.userRole())
                     .dateOfBirth(dto.dateOfBirth())
-                    .userRole(Role.USER)
                     .build();
-
-            case THEATER_OWNER -> Theater_Owner.builder()
+        } else {
+            return UserDetail.builder()
                     .username(dto.username())
                     .email(dto.email())
                     .password(dto.password())
                     .phoneNumber(dto.phoneNumber())
+                    .userRole(dto.userRole())
                     .dateOfBirth(dto.dateOfBirth())
-                    .userRole(Role.THEATER_OWNER)
                     .build();
-        };
+        }
     }
 }

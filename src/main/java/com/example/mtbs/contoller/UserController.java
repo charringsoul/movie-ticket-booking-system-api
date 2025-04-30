@@ -8,10 +8,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/")
@@ -28,5 +25,21 @@ public class UserController {
         UserDetail savedUser = userService.saveUser(userRegistrationDTO);
 
         return responseFactory.successResponse(savedUser, "User registered successfully", HttpStatus.OK);
+    }
+
+
+    @PutMapping("/update/{email}")
+    public ResponseEntity<?> updateUser(
+            @PathVariable String email,
+            @Valid @RequestBody UserRegistrationDTO userRegistrationDTO) {
+
+        UserDetail updatedUser = userService.updateUser(email, userRegistrationDTO);
+        return responseFactory.successResponse(updatedUser, "User updated successfully", HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteUser(@RequestParam String email) {
+        userService.softDeleteUserByEmail(email);
+        return ResponseEntity.ok("User with email " + email + " has been soft deleted.");
     }
 }

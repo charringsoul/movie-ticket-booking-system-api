@@ -1,8 +1,10 @@
 package com.example.mtbs.exception.handler;
+
 import com.example.mtbs.exception.FieldErrorException;
 import com.example.mtbs.exception.UserAlreadyExistsException;
 import com.example.mtbs.exception.UserNotInsertedException;
 import com.example.mtbs.utility.ErrorResponse;
+import com.example.mtbs.utility.ErrorResponse.FieldErrorDetail;
 import com.example.mtbs.utility.ResponseFactory;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,20 +37,19 @@ public class GlobalExceptionHandler {
         return responseFactory.errorResponse("Internal Error", ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationException(MethodArgumentNotValidException ex) {
-        List<ErrorResponse.FieldErrorDetail> fieldErrors = ex.getBindingResult()
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
+        List<FieldErrorDetail> fieldErrors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(error -> new ErrorResponse.FieldErrorDetail(error.getField(), error.getDefaultMessage()))
+                .map(error -> new FieldErrorDetail(error.getField(), error.getDefaultMessage()))
                 .collect(Collectors.toList());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.BAD_REQUEST.value())  // Set the status code
-                .message("Validation failed")                // Set a generic message
-                .error("Bad Request")                       // The error type
-                .fieldErrors(fieldErrors)                   // Set the field errors
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .message("Validation failed")
+                .error("Bad Request")
+                .fieldErrors(fieldErrors)
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -56,17 +57,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(FieldErrorException.class)
     public ResponseEntity<?> handleFieldErrorException(FieldErrorException ex) {
-        // This method will return the custom error details from the FieldErrorException
-        List<ErrorResponse.FieldErrorDetail> fieldErrors = ex.getErrors()
+        List<FieldErrorDetail> fieldErrors = ex.getErrors()
                 .stream()
-                .map(error -> new ErrorResponse.FieldErrorDetail(error.getField(), error.getMessage()))
+                .map(error -> new FieldErrorDetail(error.getField(), error.getMessage()))
                 .collect(Collectors.toList());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.BAD_REQUEST.value())  // Set the status code
-                .message("Validation failed")                // Set a generic message
-                .error("Bad Request")                       // The error type
-                .fieldErrors(fieldErrors)                   // Set the field errors
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .message("Validation failed")
+                .error("Bad Request")
+                .fieldErrors(fieldErrors)
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);

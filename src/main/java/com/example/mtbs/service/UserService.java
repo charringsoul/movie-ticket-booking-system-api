@@ -9,5 +9,7 @@ public interface UserService{
 
     public  UserDetail saveUser(UserRegistrationDTO userRegistrationDTO);
     public List<UserDetail> getAllUsers();
+    UserDetail updateUser(String email, UserRegistrationDTO userRegistrationDTO);
+    public void softDeleteUserByEmail(String email);
 
 }
