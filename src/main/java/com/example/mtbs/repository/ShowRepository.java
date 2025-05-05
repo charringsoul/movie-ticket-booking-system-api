@@ -18,6 +18,4 @@ public interface ShowRepository extends JpaRepository<Show, String> {
         )
     """)
     boolean existsByScreenAndTimeConflict(Screen screen, Instant startTime, Instant endTime);
-
-
 }

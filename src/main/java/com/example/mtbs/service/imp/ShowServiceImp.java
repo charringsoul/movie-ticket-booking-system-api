@@ -25,6 +25,7 @@ public class ShowServiceImp implements ShowService {
     @Transactional
     public ShowResponse createShow(String theaterId, String screenId, ShowRequest request) {
 
+        // Retrieve necessary entities
         Theater theater = theaterRepository.findById(theaterId)
                 .orElseThrow(() -> new ResourceNotFoundException("Theater not found with ID: " + theaterId));
 
@@ -34,27 +35,29 @@ public class ShowServiceImp implements ShowService {
         Movie movie = movieRepository.findById(request.movieId())
                 .orElseThrow(() -> new ResourceNotFoundException("Movie not found with ID: " + request.movieId()));
 
+        // Convert startTime to Instant and calculate endTime based on movie runtime
         Instant startTime = Instant.ofEpochMilli(request.startTime());
         Instant endTime = startTime.plus(movie.getRuntime());
 
-        // Check for conflicting shows
-        // Check for conflicting shows
+        // Check for conflicting shows on the screen
         boolean conflictExists = showRepository.existsByScreenAndTimeConflict(screen, startTime, endTime);
-
         if (conflictExists) {
             throw new IllegalStateException("Time slot is already occupied for this screen.");
         }
 
-
+        // Create and save the show entity
         Show show = new Show();
         show.setMovie(movie);
         show.setScreen(screen);
         show.setTheater(theater);
         show.setStartTime(startTime);
         show.setEndTime(endTime);
+        show.setCreatedAt(Instant.now());
+        show.setUpdatedAt(Instant.now());
 
         Show savedShow = showRepository.save(show);
 
+        // Return the response
         return new ShowResponse(
                 savedShow.getShowId(),
                 movie.getMovieId(),
