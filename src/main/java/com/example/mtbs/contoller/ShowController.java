@@ -19,12 +19,9 @@ public class ShowController {
 
     private final ShowService showService;
 
-    @PostMapping("/{theaterId}/{screenId}")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ShowResponse createShow(
-            @PathVariable String theaterId,
-            @PathVariable String screenId,
-            @Valid @RequestBody ShowRequest request) {
-        return showService.createShow(theaterId, screenId, request);
+    public ShowResponse createShow(@Valid @RequestBody ShowRequest request) {
+        return showService.createShow(request);
     }
 }

@@ -9,6 +9,7 @@ import java.time.Instant;
 @Entity
 @Getter
 @Setter
+@Table(name = "shows")
 public class Show {
 
     @Id
@@ -22,6 +23,9 @@ public class Show {
     @Column(name = "end_time")
     private Instant endTime;
 
+
+
+
     @Column(name = "created_at")
     private Instant createdAt;
 
@@ -30,7 +34,7 @@ public class Show {
 
     @ManyToOne
     @JoinColumn(name = "created_by")
-    private User createdBy;
+    private UserDetail createdBy;
 
     @ManyToOne
     @JoinColumn(name = "screen_id")
