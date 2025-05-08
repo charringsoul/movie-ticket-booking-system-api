@@ -1,6 +1,7 @@
 package com.example.mtbs.exception.handler;
 
 import com.example.mtbs.exception.FieldErrorException;
+import com.example.mtbs.exception.ResourceNotFoundException;
 import com.example.mtbs.exception.UserAlreadyExistsException;
 import com.example.mtbs.exception.UserNotInsertedException;
 import com.example.mtbs.utility.ErrorResponse;
@@ -11,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
@@ -31,11 +31,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserNotInsertedException.class)
     public ResponseEntity<?> handleUserInsertError(UserNotInsertedException ex) {
         return responseFactory.errorResponse("Registration Failed", ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGeneralError(Exception ex) {
-        return responseFactory.errorResponse("Internal Error", ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -72,11 +67,14 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public class ResourceNotFoundException extends RuntimeException {
-        public ResourceNotFoundException(String message) {
-            super(message);
-        }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<?> handleResourceNotFound(ResourceNotFoundException ex) {
+        return responseFactory.errorResponse("Resource Not Found", ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleGeneralError(Exception ex) {
+        return responseFactory.errorResponse("Internal Error", ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

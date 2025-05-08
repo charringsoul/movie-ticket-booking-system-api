@@ -20,39 +20,51 @@ public class ShowServiceImp implements ShowService {
     private final MovieRepository movieRepository;
     private final TheaterRepository theaterRepository;
     private final ScreenRepository screenRepository;
-
+    private final UserRepository userRepository;
     @Override
     @Transactional
-    public ShowResponse createShow(String theaterId, String screenId, ShowRequest request) {
+    public ShowResponse createShow(ShowRequest request) {
 
-        Theater theater = theaterRepository.findById(theaterId)
-                .orElseThrow(() -> new ResourceNotFoundException("Theater not found with ID: " + theaterId));
+        // Fetch related entities
+        Theater theater = theaterRepository.findById(request.theaterId())
+                .orElseThrow(() -> new ResourceNotFoundException("Theater not found: " + request.theaterId()));
 
-        Screen screen = screenRepository.findById(screenId)
-                .orElseThrow(() -> new ResourceNotFoundException("Screen not found with ID: " + screenId));
+        Screen screen = screenRepository.findById(request.screenId())
+                .orElseThrow(() -> new ResourceNotFoundException("Screen not found: " + request.screenId()));
 
         Movie movie = movieRepository.findById(request.movieId())
-                .orElseThrow(() -> new ResourceNotFoundException("Movie not found with ID: " + request.movieId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Movie not found: " + request.movieId()));
 
+        // Convert start time from milliseconds
         Instant startTime = Instant.ofEpochMilli(request.startTime());
-        Instant endTime = startTime.plus(movie.getRuntime());
 
-        // Check for conflicting shows
-        // Check for conflicting shows
+        // Calculate end time by adding movie runtime in minutes
+        long movieRuntimeInMinutes = movie.getRuntime();  // runtime is now a long
+        Instant endTime = startTime.plusSeconds(movieRuntimeInMinutes * 60);  // convert minutes to seconds
+
+        // Check for time conflict
         boolean conflictExists = showRepository.existsByScreenAndTimeConflict(screen, startTime, endTime);
-
         if (conflictExists) {
             throw new IllegalStateException("Time slot is already occupied for this screen.");
         }
 
+        // Fetch the user who created the show
+        UserDetail user = userRepository.findByEmail(request.createdBy())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + request.createdBy()));
 
+        // Create and populate the show
         Show show = new Show();
         show.setMovie(movie);
         show.setScreen(screen);
         show.setTheater(theater);
         show.setStartTime(startTime);
         show.setEndTime(endTime);
+        show.setCreatedBy(user);
+        Instant now = Instant.now();
+        show.setCreatedAt(now);
+        show.setUpdatedAt(now);
 
+        // Save and return response
         Show savedShow = showRepository.save(show);
 
         return new ShowResponse(
@@ -64,4 +76,7 @@ public class ShowServiceImp implements ShowService {
                 savedShow.getEndTime().toEpochMilli()
         );
     }
+
+
+
 }

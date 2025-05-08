@@ -33,7 +33,7 @@ public class Movie {
     private Set<String> castList;
 
     @Column(name = "runtime")
-    private Duration runtime;
+    private long runtime;
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "certificate")
